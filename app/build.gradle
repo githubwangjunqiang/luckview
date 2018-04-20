@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        onionvideo {
+            keyAlias 'key0'
+            keyPassword 'onionvideo'
+            storeFile file('E:/yangcong/onionvideo.jks')
+            storePassword 'onionvideo'
+        }
+    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.haowu.onionvideo"
@@ -14,12 +22,20 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.onionvideo
         }
+        debug {
+            signingConfig signingConfigs.onionvideo
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
