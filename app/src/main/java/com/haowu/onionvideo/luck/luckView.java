@@ -109,6 +109,9 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         while (isRunning) {
             long startTime = System.currentTimeMillis();
             drawLuck();
+
+
+
             long endTime = System.currentTimeMillis();
             if (endTime - startTime < 50) {
                 try {
