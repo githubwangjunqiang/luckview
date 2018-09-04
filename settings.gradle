@@ -1,1 +1,2 @@
 include ':app', ':luckview'
+rootProject.name = 'com.github.githubwangjunqiang'
