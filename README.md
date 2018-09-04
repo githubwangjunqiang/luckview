@@ -8,14 +8,19 @@ Android -小强-本人竭力打造的第一个开源项目 欢迎star 请勿商�
 
 用法：
   1 添加仓库
+  
 	allprojects {
+	
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
+	
   2 添加依赖   
-  dependencies {
+  
+ 	 dependencies {
+  
           //SNAPSHOT 修改为最新版本号 即可
 	        implementation 'com.github.githubwangjunqiang:MovieGuide:-SNAPSHOT'
 	}
