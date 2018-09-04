@@ -18,11 +18,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.haowu.onionvideo.luck.IluckView;
-import com.haowu.onionvideo.luck.LuckData;
 import com.haowu.onionvideo.ui_view.BezierEvaluator;
 import com.haowu.onionvideo.ui_view.MyMoneyView;
 import com.haowu.onionvideo.ui_view.ShoppingCartAnim;
+import com.xiaoqiang.zhujing.luckview.IluckView;
+import com.xiaoqiang.zhujing.luckview.LuckData;
 
 import java.util.ArrayList;
 import java.util.List;
