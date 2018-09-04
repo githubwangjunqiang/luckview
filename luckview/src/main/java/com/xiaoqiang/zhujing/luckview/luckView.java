@@ -1,4 +1,4 @@
-package com.haowu.onionvideo.luck;
+package com.xiaoqiang.zhujing.luckview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -8,12 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.haowu.onionvideo.R;
 
 import java.util.ArrayList;
 import java.util.List;

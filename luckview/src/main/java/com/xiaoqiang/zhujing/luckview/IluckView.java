@@ -1,4 +1,4 @@
-package com.haowu.onionvideo.luck;
+package com.xiaoqiang.zhujing.luckview;
 
 import java.util.List;
 
