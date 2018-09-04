@@ -1,6 +1,7 @@
 package com.haowu.onionvideo.luck;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +13,8 @@ import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.haowu.onionvideo.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,19 +22,75 @@ import java.util.List;
  * Created by ${王俊强} on 2018/9/3.
  */
 public class luckView extends SurfaceView implements SurfaceHolder.Callback, Runnable, IluckView {
+    /**
+     * 控件默认大小
+     */
     private int SIZE = 100;
+    /**
+     * 是否绘制
+     */
     private boolean isRunning;
+    /**
+     * 绘制开始角度 默认0开始
+     */
     private float startAngle;
     private SurfaceHolder mSurfaceHolder;
+    /**
+     * 全局画笔
+     */
     private Paint mPaint;
+    /**
+     * 文字path
+     */
     private Path mPath;
+    /**
+     * 奖品集合数组
+     */
     private volatile List<LuckData> mLuckDatas;
+    /**
+     * 外边框半径
+     */
     private float mRanius;
+    /**
+     * 奖品绘制区域的举行
+     */
     private RectF mRectF;
+    /**
+     * 速度  旋转速度
+     */
     private volatile double mSpeed = 0;
+    /**
+     * 中将下标
+     */
     private int luckIndex = -1;
-    private boolean isAdd = false;
+    /**
+     * 中将起始角度
+     */
     private float startIndexAngle, stopIndexAngle;
+    /**
+     * 外边框颜色
+     */
+    private int mBorderColor;
+    /**
+     * 中将是否高亮
+     */
+    private boolean mIsLuckUnColor;
+    /**
+     * 中将奖品 高亮颜色
+     */
+    private int mLuckDataColor;
+    /**
+     * 中奖奖品模块是否大小发生突出变化
+     */
+    private boolean mLuckisUnSize;
+    /**
+     * 字体大小
+     */
+    private float mTextSize;
+    /**
+     * 旋转速度
+     */
+    private int mRotationSpeed;
 
     public luckView(Context context) {
         this(context, null);
@@ -43,20 +102,27 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     public luckView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(attrs);
     }
 
     /**
      * 初始化
+     *
+     * @param attrs
      */
-    private void init() {
+    private void init(AttributeSet attrs) {
+        setFocusableInTouchMode(true);
+        setFocusable(true);
+        setKeepScreenOn(true);
+        getAttr(attrs);
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12,
-                getContext().getResources().getDisplayMetrics()));
+        mTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12,
+                getContext().getResources().getDisplayMetrics());
+        mPaint.setTextSize(mTextSize);
         mPaint.setStyle(Paint.Style.FILL);
         mPath = new Path();
         SIZE = dp2px(getContext(), 100);
@@ -64,7 +130,22 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         mRectF = new RectF();
     }
 
-    public int dp2px(Context context, float dp) {
+    /**
+     * 获取自定义属性
+     *
+     * @param attrs
+     */
+    private void getAttr(AttributeSet attrs) {
+        TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.luckView);
+        mIsLuckUnColor = array.getBoolean(R.styleable.luckView_lv_isUnColor, false);
+        mLuckisUnSize = array.getBoolean(R.styleable.luckView_lv_isUnSize, false);
+        mBorderColor = array.getColor(R.styleable.luckView_lv_bordercolor, Color.RED);
+        mLuckDataColor = array.getColor(R.styleable.luckView_lv_luckDataColor, Color.RED);
+        mRotationSpeed = array.getInt(R.styleable.luckView_lv_rotationSpeed, 50);
+        array.recycle();
+    }
+
+    private int dp2px(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
@@ -111,8 +192,6 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         while (isRunning) {
             long startTime = System.currentTimeMillis();
             drawLuck();
-
-
             long endTime = System.currentTimeMillis();
             if (endTime - startTime < 50) {
                 try {
@@ -124,6 +203,9 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         }
     }
 
+    /**
+     * 绘制
+     */
     private void drawLuck() {
         if (mLuckDatas == null || mLuckDatas.isEmpty()) {
             return;
@@ -142,30 +224,50 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         }
     }
 
+    /**
+     * 真正绘制
+     *
+     * @param canvas
+     */
     private void drawLuckViews(Canvas canvas) {
         float start = startAngle;
         float sweep = 360 / mLuckDatas.size();
         canvas.drawColor(Color.WHITE);
-        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(mBorderColor);
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, mRanius, mPaint);
         for (int i = 0; i < mLuckDatas.size(); i++) {
             LuckData luckData = mLuckDatas.get(i);
+            //绘制扇形
             mPaint.setColor(luckData.getBackColor());
             if (stopIndexAngle != 0 && mSpeed == 0 && luckIndex == i) {
-                RectF rectF = new RectF();
-                rectF.set(0, 0, getHeight(), getWidth());
-                mPaint.setColor(Color.RED);
-                canvas.drawArc(rectF, start, sweep, true, mPaint);
+                if (mIsLuckUnColor) {
+                    mPaint.setColor(mLuckDataColor);
+                }
+                if (mLuckisUnSize) {
+                    RectF rectF = new RectF();
+                    rectF.set(0, 0, getHeight(), getWidth());
+                    canvas.drawArc(rectF, start, sweep, true, mPaint);
+                } else {
+                    canvas.drawArc(mRectF, start, sweep, true, mPaint);
+                }
             } else {
                 canvas.drawArc(mRectF, start, sweep, true, mPaint);
             }
-
+            //绘制文字
             mPath.reset();
             mPath.addArc(mRectF, start, sweep);
             Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
             float v = Math.abs(fontMetrics.ascent) + Math.abs(fontMetrics.leading) + Math.abs(fontMetrics.descent);
-            mPaint.setColor(Color.WHITE);
+
+            mPaint.setColor(luckData.getTextColor());
+            if (luckData.getTextSize() > 0) {
+                mPaint.setTextSize(luckData.getTextSize());
+            } else {
+                mPaint.setTextSize(mTextSize);
+            }
             canvas.drawTextOnPath(luckData.getName(), mPath, 0, v, mPaint);
+
+            //绘制图片
             start += sweep;
         }
 
@@ -183,13 +285,13 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
             if (mSpeed == 20) {
                 if (startIndexAngle > stopIndexAngle) {
                     if (angle > startIndexAngle || angle < stopIndexAngle) {
-
+                        //可以做自己的操作
                     } else {
                         mSpeed++;
                     }
                 } else {
                     if (angle > startIndexAngle && angle < stopIndexAngle) {
-
+                        //可以做自己的操作
                     } else {
                         mSpeed++;
                     }
@@ -206,7 +308,6 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void stop() {
-        isAdd = false;
     }
 
     @Override
@@ -226,7 +327,7 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
     @Override
     public void startLuck() {
         luckIndex = -1;
-        mSpeed = 50;
+        mSpeed = mRotationSpeed;
     }
 
     @Override
@@ -266,4 +367,26 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
     public boolean isTruning() {
         return mSpeed != 0;
     }
+
+    @Override
+    public void setBorderColor(int color) {
+        mBorderColor = color;
+    }
+
+    @Override
+    public void setLuckisUnColor(boolean isUnColor) {
+        mIsLuckUnColor = isUnColor;
+    }
+
+    @Override
+    public void setLuckDataColor(int color) {
+        mLuckDataColor = color;
+    }
+
+    @Override
+    public void setLuckisUnSize(boolean isUnSize) {
+        mLuckisUnSize = isUnSize;
+    }
+
+
 }

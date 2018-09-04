@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.flyco.tablayout.SlidingTabLayout;
 import com.haowu.onionvideo.luck.IluckView;
 import com.haowu.onionvideo.luck.LuckData;
 import com.haowu.onionvideo.ui_view.BezierEvaluator;
@@ -137,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        for (int i = 0; i < 6; i++) {
-            LuckData data = new LuckData("中大奖了" + i, i % 2 == 0 ? Color.BLUE : Color.GREEN,
+        for (int i = 0; i < 2; i++) {
+            LuckData data = new LuckData("中大奖了" + i, 0, 0,i % 2 == 0 ? Color.BLUE : Color.GREEN,
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 1 + i);
             mLuckData.add(data);
 

@@ -7,18 +7,36 @@ import android.graphics.Bitmap;
  */
 public class LuckData {
     private String name;
+    private int textColor;
+    private int textSize;
     private int backColor;
     private Bitmap mBitmap;
     private int id = -1;
-
     public LuckData() {
     }
-
-    public LuckData(String name, int backColor, Bitmap bitmap, int id) {
+    public LuckData(String name, int textColor,int textSize ,int backColor, Bitmap bitmap, int id) {
         this.name = name;
+        this.textColor = textColor;
         this.backColor = backColor;
+        this.textSize = textSize;
         mBitmap = bitmap;
         this.id = id;
+    }
+
+    public int getTextSize() {
+        return textSize;
+    }
+
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+    }
+
+    public int getTextColor() {
+        return textColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
     }
 
     public String getName() {
