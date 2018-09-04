@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,8 +28,9 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
     private volatile List<LuckData> mLuckDatas;
     private float mRanius;
     private RectF mRectF;
-    private int mSpeed = 0;
+    private volatile double mSpeed = 0;
     private int luckIndex = -1;
+    private boolean isAdd = false;
     private float startIndexAngle, stopIndexAngle;
 
     public luckView(Context context) {
@@ -111,7 +113,6 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
             drawLuck();
 
 
-
             long endTime = System.currentTimeMillis();
             if (endTime - startTime < 50) {
                 try {
@@ -150,7 +151,15 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
         for (int i = 0; i < mLuckDatas.size(); i++) {
             LuckData luckData = mLuckDatas.get(i);
             mPaint.setColor(luckData.getBackColor());
-            canvas.drawArc(mRectF, start, sweep, true, mPaint);
+            if (stopIndexAngle != 0 && mSpeed == 0 && luckIndex == i) {
+                RectF rectF = new RectF();
+                rectF.set(0, 0, getHeight(), getWidth());
+                mPaint.setColor(Color.RED);
+                canvas.drawArc(rectF, start, sweep, true, mPaint);
+            } else {
+                canvas.drawArc(mRectF, start, sweep, true, mPaint);
+            }
+
             mPath.reset();
             mPath.addArc(mRectF, start, sweep);
             Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
@@ -159,27 +168,36 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
             canvas.drawTextOnPath(luckData.getName(), mPath, 0, v, mPaint);
             start += sweep;
         }
-        float index = 0;
-        float endAngle = startAngle;
-        if (endAngle >= 360) {
-            index = endAngle % 360;
-        } else {
-            index = endAngle;
-        }
 
 
         startAngle += mSpeed;
-
+        if (startAngle >= 360) {
+            startAngle = startAngle - 360;
+        }
+        float angle = startAngle + 210;
+        if (angle >= 360) {
+            angle = angle - 360;
+        }
         if (luckIndex >= 0) {
             mSpeed--;
-            if (mSpeed == 5) {
-                if (index < stopIndexAngle && index > startIndexAngle) {
-                    mSpeed = 0;
+            if (mSpeed == 20) {
+                if (startIndexAngle > stopIndexAngle) {
+                    if (angle > startIndexAngle || angle < stopIndexAngle) {
+
+                    } else {
+                        mSpeed++;
+                    }
                 } else {
-                    mSpeed += 1;
+                    if (angle > startIndexAngle && angle < stopIndexAngle) {
+
+                    } else {
+                        mSpeed++;
+                    }
                 }
+
             }
         }
+
 
         if (mSpeed <= 0) {
             mSpeed = 0;
@@ -188,7 +206,7 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void stop() {
-        luckIndex = -1;
+        isAdd = false;
     }
 
     @Override
@@ -207,19 +225,41 @@ public class luckView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     @Override
     public void startLuck() {
+        luckIndex = -1;
         mSpeed = 50;
     }
 
     @Override
     public void stopLuck(LuckData data) {
+        int index = 0;
         for (int i = 0; i < mLuckDatas.size(); i++) {
             if (mLuckDatas.get(i).getId() == data.getId()) {
-                luckIndex = i;
-                stopIndexAngle = 270 - 360 / mLuckDatas.size() * i;
-                startIndexAngle = stopIndexAngle - 360 / mLuckDatas.size();
-                return;
+                index = i;
+                float luckangle = 360 / mLuckDatas.size();
+                startIndexAngle = 270 - (index + 1) * luckangle;
+                if (startIndexAngle < 0) {
+                    startIndexAngle += 360;
+                }
+                stopIndexAngle = startIndexAngle + luckangle;
+                if (stopIndexAngle > 360) {
+                    stopIndexAngle -= 360;
+                }
+                break;
             }
         }
+//        float luckangle = 360 / mLuckDatas.size();
+//
+//        float startIndexAngle = 270 - (index + 1) * luckangle;
+//        float stopIndexAngle = startIndexAngle + luckangle;
+//        float targetStart = 10 * 360 + startIndexAngle;
+//        float targetStop = 10 * 360 + stopIndexAngle;
+//
+//        float v1 = (float) ((-1 + Math.sqrt(1 + 8 * targetStart)) / 2) + luckangle/10;
+//        float v2 = (float) ((-1 + Math.sqrt(1 + 8 * targetStop)) / 2) - luckangle/10;
+//        mSpeed = (v1 + Math.random() * (v2 - v1));
+//        startAngle = 0;
+        luckIndex = index;
+
     }
 
     @Override

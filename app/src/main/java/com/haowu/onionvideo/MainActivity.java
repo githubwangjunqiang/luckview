@@ -53,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
         mTextViewName = findViewById(R.id.tvname);
         mIluckView = findViewById(R.id.luckview);
         mLinearLayout = findViewById(R.id.layout_lin);
+        View view = findViewById(R.id.ivimage);
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+              view.setTranslationY(-view.getHeight()/4+8);
+            }
+        });
         TextView viewById = findViewById(R.id.tv);
         CharSequence dd = getStrings();
         viewById.setText(dd.toString());
@@ -68,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mImageViewStart.post(() -> {
-            View view = getView(mImageViewStart);
-            mImageViewStart.setOnClickListener(v -> inanimation(view));
+            View views = getView(mImageViewStart);
+            mImageViewStart.setOnClickListener(v -> inanimation(views));
         });
 
         setData();
@@ -130,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
             LuckData data = new LuckData("中大奖了" + i, i % 2 == 0 ? Color.BLUE : Color.GREEN,
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 1 + i);
             mLuckData.add(data);

@@ -41,12 +41,14 @@
             android:layout_height="wrap_content" />
 
         <ImageView
+            android:id="@+id/ivimage"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_gravity="center"
             android:background="@drawable/ic_se"
             android:onClick="doClick"
-            android:src="@drawable/ic_luckbtn" />
+
+            android:src="@drawable/ic_zhizhen" />
     </FrameLayout>
 
     <TextView
