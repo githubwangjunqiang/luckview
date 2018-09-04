@@ -22,5 +22,5 @@ Android -小强-本人竭力打造的第一个开源项目 欢迎star 请勿商�
  	 dependencies {
   
           //SNAPSHOT 修改为最新版本号 即可
-	        implementation 'com.github.githubwangjunqiang:MovieGuide:-SNAPSHOT'
+	        implementation 'com.github.githubwangjunqiang:luckview:7d3780d89b'
 	}
